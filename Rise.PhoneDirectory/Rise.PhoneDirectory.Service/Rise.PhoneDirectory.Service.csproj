@@ -6,4 +6,8 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Rise.PhoneDirectory.Repository\Rise.PhoneDirectory.Repository.csproj" />
+  </ItemGroup>
+
 </Project>
