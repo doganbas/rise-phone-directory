@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 using Rise.PhoneDirectory.Repository;
 using Rise.PhoneDirectory.Service.Mappings;
 using Rise.PhoneDirectory.Service.Modules;
@@ -16,6 +17,11 @@ builder.Services.AddDbContext<PhoneDirectoryDbContext>(opts =>
     opts.UseNpgsql(builder.Configuration.GetConnectionString("NpgSql"));
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 });
+builder.Services.AddSingleton(sp => new ConnectionFactory()
+{
+    Uri = new Uri(builder.Configuration.GetConnectionString("ReportService")),
+    DispatchConsumersAsync = true
+});
 
 
 builder.Services.AddAutoMapper(typeof(MapProfile));
@@ -26,7 +32,6 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 });
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

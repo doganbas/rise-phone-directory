@@ -58,5 +58,19 @@ namespace Rise.PhoneDirectory.API.Controllers
             var reportData = _service.GetReportData();
             return StatusCode(StatusCodes.Status200OK, reportData);
         }
+
+        [HttpPost("CreateReport")]
+        public async Task<ActionResult<ReportDto>> CreateReport()
+        {
+            var report = await _service.AddAsync(new()
+            {
+                ReportStatus = Store.Enums.ReportStatus.ToBe,
+                RequestTime = DateTime.Now
+            });
+            if (report != null && report.ReportId > 0)
+                await _service.ReportExcelAsync(report.ReportId);
+            _logger.LogInformation(ProjectConst.ExcelReportServiceRequestNew, report);
+            return StatusCode(StatusCodes.Status201Created, _mapper.Map<ReportDto>(report));
+        }
     }
 }

@@ -6,5 +6,9 @@ namespace Rise.PhoneDirectory.Core.Services
     public interface IReportService : IGenericService<Report>
     {
         public List<ReportDataDto> GetReportData();
+
+        public Task<bool> ReportExcelAsync(int reportId);
+
+        public bool ReportExcel(int reportId);
     }
 }
