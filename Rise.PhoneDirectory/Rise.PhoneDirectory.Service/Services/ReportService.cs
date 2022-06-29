@@ -71,6 +71,7 @@ namespace Rise.PhoneDirectory.Service.Services
                 Directory.CreateDirectory(saveDirectory);
 
             using FileStream stream = new(savePath, FileMode.Create);
+            await reportFile.CopyToAsync(stream);
             report.CreatedTime = DateTime.Now;
             report.FilePath = $"/reports/{fileName}";
             report.ReportStatus = Store.Enums.ReportStatus.Completed;
