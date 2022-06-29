@@ -12,11 +12,11 @@ namespace Rise.PhoneDirectory.API.Controllers
     [Route("[controller]")]
     public class ReportController : ControllerBase
     {
-        private readonly IGenericService<Report> _service;
+        private readonly IReportService _service;
         private readonly IMapper _mapper;
         private readonly ILogger<ReportController> _logger;
 
-        public ReportController(IGenericService<Report> service, IMapper mapper, ILogger<ReportController> logger)
+        public ReportController(IReportService service, IMapper mapper, ILogger<ReportController> logger)
         {
             _service = service;
             _mapper = mapper;
@@ -41,22 +41,6 @@ namespace Rise.PhoneDirectory.API.Controllers
             return Ok(_mapper.Map<ReportDto>(report));
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ContactInformationDto>> Post([FromBody] ReportDto reportDto)
-        {
-            var report = await _service.AddAsync(_mapper.Map<Report>(reportDto));
-            return StatusCode(StatusCodes.Status201Created, _mapper.Map<ReportDto>(report));
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] ReportDto reportDto)
-        {
-            if (reportDto.Id != id)
-                return StatusCode(StatusCodes.Status400BadRequest, ProjectConst.PutIdError);
-            await _service.UpdateAsync(_mapper.Map<Report>(reportDto));
-            return StatusCode(StatusCodes.Status204NoContent);
-        }
-
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
@@ -68,5 +52,11 @@ namespace Rise.PhoneDirectory.API.Controllers
             return StatusCode(StatusCodes.Status204NoContent);
         }
 
+        [HttpGet("GetReportData")]
+        public ActionResult<ReportDataDto> GetReportData()
+        {
+            var reportData = _service.GetReportData();
+            return StatusCode(StatusCodes.Status200OK, reportData);
+        }
     }
 }
