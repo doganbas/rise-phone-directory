@@ -2,6 +2,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Rise.PhoneDirectory.Repository;
+using Rise.PhoneDirectory.Service.Mappings;
 using Rise.PhoneDirectory.Service.Modules;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,9 @@ builder.Services.AddDbContext<PhoneDirectoryDbContext>(opts =>
     opts.UseNpgsql(builder.Configuration.GetConnectionString("NpgSql"));
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 });
+
+
+builder.Services.AddAutoMapper(typeof(MapProfile));
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
