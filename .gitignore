@@ -261,4 +261,4 @@ __pycache__/
 *.pyc
 
 # Special Files
-*.Development.json
+*.[Dd]evelopment.json
