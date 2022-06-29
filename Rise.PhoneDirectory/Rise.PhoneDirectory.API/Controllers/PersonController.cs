@@ -12,11 +12,11 @@ namespace Rise.PhoneDirectory.API.Controllers
     [Route("[controller]")]
     public class PersonController : ControllerBase
     {
-        private readonly IGenericService<Person> _service;
+        private readonly IPersonService _service;
         private readonly IMapper _mapper;
         private readonly ILogger<ContactInformationController> _logger;
 
-        public PersonController(IGenericService<Person> service, IMapper mapper, ILogger<ContactInformationController> logger)
+        public PersonController(IPersonService service, IMapper mapper, ILogger<ContactInformationController> logger)
         {
             _service = service;
             _mapper = mapper;
@@ -69,7 +69,11 @@ namespace Rise.PhoneDirectory.API.Controllers
             return StatusCode(StatusCodes.Status204NoContent);
         }
 
-
-        ///TODO Get Person By Id With Contact Information
+        [HttpGet("[action]/{personId}")]
+        public async Task<ActionResult<PersonWithContactInfoDto>> GetPersonByIdWithContactInformation(int personId)
+        {
+            var personWithContactInformation = await _service.GetPersonByIdWithContactInformationAsync(personId);
+            return Ok(personWithContactInformation);
+        }
     }
 }
