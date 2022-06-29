@@ -17,5 +17,8 @@
         public static string ExcelReportServiceConnectionStart = "Kuyruklama sistemi ile başlantı kuruldu...";
         public static string ExcelReportServiceConnectionEnd = "Kuyruklama sistemi ile başlantı sonlandırıldı...";
         public static string ExcelReportServiceRequestNew = "Yeni bir rapor isteği oluşturuldu ve kuyruğa eklendi.";
+
+        public static string ExcelReportServiceCrated = "{0} Id'li rapor talebi başarı ile oluşturuldu.";
+        public static string ExcelReportServiceCreateError = "{0} Id'li rapor oluşturulurken bir hata oluştu.";
     }
 }
