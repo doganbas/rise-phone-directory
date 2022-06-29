@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-Rise.PhoneDirectory.ReportWorker-4914E29E-F05A-44BF-9EB2-F278359F35A8</UserSecretsId>
   </PropertyGroup>
