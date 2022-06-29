@@ -14,13 +14,15 @@ namespace Rise.PhoneDirectory.ReportWorker
         private readonly ILogger<Worker> _logger;
         private readonly IReporterClientService _reporterClientService;
         private readonly ExcelReportService _excelReportService;
+        private readonly ReportApiService _reportApiService;
         private IModel _channel;
 
-        public Worker(ILogger<Worker> logger, IReporterClientService reporterClientService, ExcelReportService excelReportService)
+        public Worker(ILogger<Worker> logger, IReporterClientService reporterClientService, ExcelReportService excelReportService, ReportApiService reportApiService)
         {
             _logger = logger;
             _reporterClientService = reporterClientService;
             _excelReportService = excelReportService;
+            _reportApiService = reportApiService;
         }
 
         public override Task StartAsync(CancellationToken cancellationToken)
@@ -42,17 +44,18 @@ namespace Rise.PhoneDirectory.ReportWorker
 
         private async Task Consumer_Received(object sender, BasicDeliverEventArgs @event)
         {
+            var reportId = 0;
             try
             {
                 var reportExcelMessageDto = JsonSerializer.Deserialize<ReportExcelMessageDto>(Encoding.UTF8.GetString(@event.Body.ToArray()));
+                reportId = reportExcelMessageDto.ReportId;
                 var reportFile = await _excelReportService.CreateExcel(reportExcelMessageDto);
-                //TODO Send Created File
-
+                await _reportApiService.CompleteReport(reportFile, reportExcelMessageDto.ReportId);
                 _channel.BasicAck(@event.DeliveryTag, false);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ProjectConst.ExcelReportServiceCreateError);
+                _logger.LogError(ex, string.Format(ProjectConst.ExcelReportServiceCreateError, reportId));
             }
         }
     }

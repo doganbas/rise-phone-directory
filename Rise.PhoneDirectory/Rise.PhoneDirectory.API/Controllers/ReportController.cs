@@ -72,5 +72,14 @@ namespace Rise.PhoneDirectory.API.Controllers
             _logger.LogInformation(ProjectConst.ExcelReportServiceRequestNew, report);
             return StatusCode(StatusCodes.Status201Created, _mapper.Map<ReportDto>(report));
         }
+
+        [HttpPost("CompleteReport/{reportId}")]
+        public async Task<ActionResult> CompleteReport(IFormFile reportFile, int reportId)
+        {
+            var reportResult = await _service.CompleteReportAsync(reportFile, reportId);
+            if (!reportResult)
+                return StatusCode(StatusCodes.Status400BadRequest);
+            return StatusCode(StatusCodes.Status200OK);
+        }
     }
 }

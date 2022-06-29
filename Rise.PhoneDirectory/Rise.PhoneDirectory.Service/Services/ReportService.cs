@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.AspNetCore.Http;
+using RabbitMQ.Client;
 using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Repositories;
 using Rise.PhoneDirectory.Core.Services;
@@ -20,6 +21,7 @@ namespace Rise.PhoneDirectory.Service.Services
             _repository = repository;
             _reporterClientService = reporterClientService;
         }
+
 
         public List<ReportDataDto> GetReportData()
         {
@@ -50,6 +52,36 @@ namespace Rise.PhoneDirectory.Service.Services
         public bool ReportExcel(int reportId)
         {
             return ReportExcelAsync(reportId).Result;
+        }
+
+
+        public async Task<bool> CompleteReportAsync(IFormFile reportFile, int reportId)
+        {
+            if (reportFile is not { Length: > 0 })
+                return false;
+
+            var report = await GetByIdAsync(reportId);
+            if (report is null)
+                return false;
+
+            var fileName = Guid.NewGuid().ToString().Substring(0, 10) + Path.GetExtension(reportFile.FileName);
+            var saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/reports");
+            var savePath = Path.Combine(saveDirectory, fileName);
+            if (!Directory.Exists(saveDirectory))
+                Directory.CreateDirectory(saveDirectory);
+
+            using FileStream stream = new(savePath, FileMode.Create);
+            report.CreatedTime = DateTime.Now;
+            report.FilePath = $"/reports/{fileName}";
+            report.ReportStatus = Store.Enums.ReportStatus.Completed;
+            await UpdateAsync(report);
+
+            return true;
+        }
+
+        public bool CompleteReport(IFormFile reportFile, int reportId)
+        {
+            return CompleteReportAsync(reportFile, reportId).Result;
         }
     }
 }

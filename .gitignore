@@ -261,4 +261,5 @@ __pycache__/
 *.pyc
 
 # Special Files
-*.[Dd]evelopment.json
+.[Dd]evelopment.json
+wwwroot

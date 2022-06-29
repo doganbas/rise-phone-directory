@@ -1,4 +1,5 @@
-﻿using Rise.PhoneDirectory.Store.Dtos;
+﻿using Rise.PhoneDirectory.Core.Constants;
+using Rise.PhoneDirectory.Store.Dtos;
 using System.Net.Http.Json;
 
 namespace Rise.PhoneDirectory.ReportWorker.Services
@@ -23,6 +24,22 @@ namespace Rise.PhoneDirectory.ReportWorker.Services
         public List<ReportDataDto> GetReportData()
         {
             return GetReportDataAsync().Result;
+        }
+
+        public async Task<bool> CompleteReport(byte[] reportFile, int reportId)
+        {
+            MultipartFormDataContent multipartFormDataContent = new()
+            {
+                { new ByteArrayContent(reportFile), "reportFile", Guid.NewGuid().ToString() + ".xlsx" }
+            };
+            var response = await _httpClient.PostAsync($"/Report/CompleteReport/{reportId}", multipartFormDataContent);
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation(string.Format(ProjectConst.ExcelReportServiceCrated, reportId));
+                return true;
+            }
+
+            return false;
         }
     }
 }

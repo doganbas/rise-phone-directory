@@ -9,6 +9,10 @@ namespace Rise.PhoneDirectory.Store.Models
 
         public DateTime RequestTime { get; set; }
 
+        public DateTime? CreatedTime { get; set; }
+
         public ReportStatus ReportStatus { get; set; }
+
+        public string FilePath { get; set; }
     }
 }
