@@ -15,6 +15,7 @@ namespace Rise.PhoneDirectory.Repository.Configuration
 
             builder.Property(nq => nq.RequestTime).IsRequired();
             builder.Property(nq => nq.ReportStatus).IsRequired();
+            builder.Property(nq => nq.FilePath).HasMaxLength(400);
         }
     }
 }
