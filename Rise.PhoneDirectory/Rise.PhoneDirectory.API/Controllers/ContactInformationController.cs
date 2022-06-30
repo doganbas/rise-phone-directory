@@ -49,7 +49,7 @@ namespace Rise.PhoneDirectory.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex);
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex.Message);
             }
         }
 
@@ -67,7 +67,7 @@ namespace Rise.PhoneDirectory.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex);
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex.Message);
             }
         }
 
@@ -76,12 +76,12 @@ namespace Rise.PhoneDirectory.API.Controllers
         {
             try
             {
-                await _service.RemoveAsync(id);
+                await _service.RemoveByIdAsync(id);
                 return StatusCode(StatusCodes.Status204NoContent);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
     }
