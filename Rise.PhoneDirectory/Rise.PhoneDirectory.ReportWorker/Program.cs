@@ -14,8 +14,8 @@ IHost host = Host.CreateDefaultBuilder(args)
             DispatchConsumersAsync = true
         });
         services.AddSingleton<IReporterClientService, ReporterClientService>();
-        services.AddSingleton<ExcelReportService>();
-        services.AddHttpClient<ReportApiService>(opts =>
+        services.AddSingleton<IExcelReportService, ExcelReportService>();
+        services.AddHttpClient<IReportApiService, ReportApiService>(opts =>
         {
             opts.BaseAddress = new Uri(hostContext.Configuration["ServiceBaseUrl"]);
         });

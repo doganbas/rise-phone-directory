@@ -2,7 +2,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Services;
-using Rise.PhoneDirectory.ReportWorker.Services;
 using Rise.PhoneDirectory.Store.Dtos;
 using System.Text;
 using System.Text.Json;
@@ -13,11 +12,11 @@ namespace Rise.PhoneDirectory.ReportWorker
     {
         private readonly ILogger<Worker> _logger;
         private readonly IReporterClientService _reporterClientService;
-        private readonly ExcelReportService _excelReportService;
-        private readonly ReportApiService _reportApiService;
+        private readonly IExcelReportService _excelReportService;
+        private readonly IReportApiService _reportApiService;
         private IModel _channel;
 
-        public Worker(ILogger<Worker> logger, IReporterClientService reporterClientService, ExcelReportService excelReportService, ReportApiService reportApiService)
+        public Worker(ILogger<Worker> logger, IReporterClientService reporterClientService, IExcelReportService excelReportService, IReportApiService reportApiService)
         {
             _logger = logger;
             _reporterClientService = reporterClientService;
@@ -50,7 +49,7 @@ namespace Rise.PhoneDirectory.ReportWorker
                 var reportExcelMessageDto = JsonSerializer.Deserialize<ReportExcelMessageDto>(Encoding.UTF8.GetString(@event.Body.ToArray()));
                 reportId = reportExcelMessageDto.ReportId;
                 var reportFile = await _excelReportService.CreateExcel(reportExcelMessageDto);
-                await _reportApiService.CompleteReport(reportFile, reportExcelMessageDto.ReportId);
+                await _reportApiService.CompleteReportAsync(reportFile, reportExcelMessageDto.ReportId);
                 _channel.BasicAck(@event.DeliveryTag, false);
             }
             catch (Exception ex)
