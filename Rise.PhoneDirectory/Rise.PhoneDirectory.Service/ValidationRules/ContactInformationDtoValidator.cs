@@ -7,6 +7,7 @@ namespace Rise.PhoneDirectory.Service.ValidationRules
     {
         public ContactInformationDtoValidator()
         {
+            RuleFor(nq => nq.PersonId).NotEmpty();
             RuleFor(nq => nq.InformationType).NotEmpty();
             RuleFor(nq => nq.InformationContent).NotEmpty();
             RuleFor(nq => nq.InformationContent).Length(2, 400);

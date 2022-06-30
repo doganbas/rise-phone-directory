@@ -34,13 +34,18 @@ namespace Rise.PhoneDirectory.Core.Services
         void Update(TEntity entity);
 
 
-        Task DeleteAsync(TEntity entity);
+        Task RemoveAsync(TEntity entity);
 
-        void Delete(TEntity entity);
+        void Remove(TEntity entity);
 
 
-        Task DeleteRageAsync(IEnumerable<TEntity> entities);
+        Task RemoveAsync(int id);
 
-        void DeleteRage(IEnumerable<TEntity> entities);
+        void Remove(int id);
+
+
+        Task RemoveRageAsync(IEnumerable<TEntity> entities);
+
+        void RemoveRage(IEnumerable<TEntity> entities);
     }
 }
