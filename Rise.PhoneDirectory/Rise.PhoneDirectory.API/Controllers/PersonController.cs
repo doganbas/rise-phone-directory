@@ -1,10 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Services;
 using Rise.PhoneDirectory.Store.Dtos;
-using Rise.PhoneDirectory.Store.Models;
 
 namespace Rise.PhoneDirectory.API.Controllers
 {
@@ -13,39 +10,40 @@ namespace Rise.PhoneDirectory.API.Controllers
     public class PersonController : ControllerBase
     {
         private readonly IPersonService _service;
-        private readonly IMapper _mapper;
-        private readonly ILogger<ContactInformationController> _logger;
 
-        public PersonController(IPersonService service, IMapper mapper, ILogger<ContactInformationController> logger)
+        public PersonController(IPersonService service)
         {
             _service = service;
-            _mapper = mapper;
-            _logger = logger;
         }
 
         [HttpGet]
-        public async Task<ActionResult<PersonDto>> Get()
+        public ActionResult<PersonDto> Get()
         {
-            var persons = await _service.Where().ToListAsync();
+            var persons = _service.Where().ToList();
+
             if (!persons.Any())
                 return NoContent();
-            return Ok(_mapper.Map<List<PersonDto>>(persons));
+
+            return Ok(persons);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<PersonDto>> Get(int id)
         {
             var person = await _service.GetByIdAsync(id);
+
             if (person == null)
                 return NotFound();
-            return Ok(_mapper.Map<PersonDto>(person));
+
+            return Ok(person);
         }
 
         [HttpPost]
         public async Task<ActionResult<PersonDto>> Post([FromBody] PersonDto personDto)
         {
-            var person = await _service.AddAsync(_mapper.Map<Person>(personDto));
-            return StatusCode(StatusCodes.Status201Created, _mapper.Map<PersonDto>(person));
+            var person = await _service.AddAsync(personDto);
+
+            return StatusCode(StatusCodes.Status201Created, person);
         }
 
         [HttpPut("{id}")]
@@ -53,19 +51,16 @@ namespace Rise.PhoneDirectory.API.Controllers
         {
             if (personDto.Id != id)
                 return StatusCode(StatusCodes.Status400BadRequest, ProjectConst.PutIdError);
-            await _service.UpdateAsync(_mapper.Map<Person>(personDto));
+
+            await _service.UpdateAsync(personDto);
+
             return StatusCode(StatusCodes.Status204NoContent);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var person = await _service.GetByIdAsync(id);
-            if (person == null)
-                return NotFound();
-            await _service.DeleteAsync(person);
-
-            _logger.LogInformation(string.Format(ProjectConst.DeleteLogMessage, typeof(Person).Name), person);
+            await _service.RemoveAsync(id);
             return StatusCode(StatusCodes.Status204NoContent);
         }
 

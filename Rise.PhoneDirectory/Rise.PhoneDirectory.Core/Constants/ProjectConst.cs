@@ -20,5 +20,7 @@
 
         public static string ExcelReportServiceCrated = "{0} Id'li rapor talebi başarı ile oluşturuldu.";
         public static string ExcelReportServiceCreateError = "{0} Id'li rapor oluşturulurken bir hata oluştu.";
+
+        public static string WrongValidationType = "Hatalı doğrulama sınıfı seçildi.";
     }
 }

@@ -1,10 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Services;
 using Rise.PhoneDirectory.Store.Dtos;
-using Rise.PhoneDirectory.Store.Models;
 
 namespace Rise.PhoneDirectory.API.Controllers
 {
@@ -12,41 +9,42 @@ namespace Rise.PhoneDirectory.API.Controllers
     [Route("[controller]")]
     public class ContactInformationController : ControllerBase
     {
-        private readonly IGenericService<ContactInformation> _service;
-        private readonly IMapper _mapper;
-        private readonly ILogger<ContactInformationController> _logger;
+        private readonly IContactInformationService _service;
 
-        public ContactInformationController(IGenericService<ContactInformation> service, IMapper mapper, ILogger<ContactInformationController> logger)
+        public ContactInformationController(IContactInformationService service)
         {
             _service = service;
-            _mapper = mapper;
-            _logger = logger;
         }
 
 
         [HttpGet]
-        public async Task<ActionResult<ContactInformationDto>> Get()
+        public ActionResult<ContactInformationDto> Get()
         {
-            var contactInforations = await _service.Where().ToListAsync();
+            var contactInforations = _service.Where().ToList();
+
             if (!contactInforations.Any())
                 return NoContent();
-            return Ok(_mapper.Map<List<ContactInformationDto>>(contactInforations));
+
+            return Ok(contactInforations);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ContactInformationDto>> Get(int id)
         {
             var contactInformation = await _service.GetByIdAsync(id);
+
             if (contactInformation == null)
                 return NotFound();
-            return Ok(_mapper.Map<ContactInformationDto>(contactInformation));
+
+            return Ok(contactInformation);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ContactInformationDto>> Post([FromBody] ContactInformationDto personDto)
+        public async Task<ActionResult<ContactInformationDto>> Post([FromBody] ContactInformationDto contactInformationDto)
         {
-            var contactInformation = await _service.AddAsync(_mapper.Map<ContactInformation>(personDto));
-            return StatusCode(StatusCodes.Status201Created, _mapper.Map<ContactInformationDto>(contactInformation));
+            var contactInformation = await _service.AddAsync(contactInformationDto);
+
+            return StatusCode(StatusCodes.Status201Created, contactInformation);
         }
 
         [HttpPut("{id}")]
@@ -54,19 +52,17 @@ namespace Rise.PhoneDirectory.API.Controllers
         {
             if (contactInformationDto.Id != id)
                 return StatusCode(StatusCodes.Status400BadRequest, ProjectConst.PutIdError);
-            await _service.UpdateAsync(_mapper.Map<ContactInformation>(contactInformationDto));
+
+            await _service.UpdateAsync(contactInformationDto);
+
             return StatusCode(StatusCodes.Status204NoContent);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var person = await _service.GetByIdAsync(id);
-            if (person == null)
-                return NotFound();
-            await _service.DeleteAsync(person);
+            await _service.RemoveAsync(id);
 
-            _logger.LogInformation(string.Format(ProjectConst.DeleteLogMessage, typeof(ContactInformation).Name), person);
             return StatusCode(StatusCodes.Status204NoContent);
         }
     }

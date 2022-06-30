@@ -1,31 +1,185 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using RabbitMQ.Client;
+using Rise.PhoneDirectory.Core.Aspects;
 using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Repositories;
 using Rise.PhoneDirectory.Core.Services;
 using Rise.PhoneDirectory.Core.UnitOfWorks;
+using Rise.PhoneDirectory.Service.ValidationRules;
 using Rise.PhoneDirectory.Store.Dtos;
 using Rise.PhoneDirectory.Store.Models;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
 
 namespace Rise.PhoneDirectory.Service.Services
 {
-    public class ReportService : GenericService<Report>, IReportService
+    public class ReportService : IReportService
     {
-        private readonly IReportRepository _repository;
         private readonly IReporterClientService _reporterClientService;
+        private readonly IGenericRepository<ContactInformation> _contactInformationRepository;
+        private readonly IGenericRepository<Report> _repository;
+        private readonly IPersonRepository _personRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public ReportService(IUnitOfWork unitOfWork, IReportRepository repository, IReporterClientService reporterClientService) : base(unitOfWork, repository)
+        public ReportService(IUnitOfWork unitOfWork, IGenericRepository<Report> repository, IPersonRepository personRepository, IMapper mapper, IReporterClientService reporterClientService, IGenericRepository<ContactInformation> contactInformationRepository)
         {
             _repository = repository;
+            _personRepository = personRepository; ;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
             _reporterClientService = reporterClientService;
+            _contactInformationRepository = contactInformationRepository;
         }
+
+
+        public async Task<ReportDto> GetByIdAsync(int id)
+        {
+            var report = await _repository.GetByIdAsync(id);
+            return _mapper.Map<ReportDto>(report);
+        }
+
+        public ReportDto GetById(int id)
+        {
+            var report = _repository.GetById(id);
+            return _mapper.Map<ReportDto>(report);
+        }
+
+
+        public IEnumerable<ReportDto> Where(Expression<Func<Report, bool>> expression = null)
+        {
+            var reports = _repository.Where(expression).ToList();
+            return _mapper.Map<IEnumerable<ReportDto>>(reports);
+        }
+
+
+        public async Task<bool> AnyAsync(Expression<Func<Report, bool>> expression)
+        {
+            return await _repository.AnyAsync(expression);
+        }
+
+        public bool Any(Expression<Func<Report, bool>> expression = null)
+        {
+            return _repository.Any(expression);
+        }
+
+
+        [ValidationAspect(typeof(ReportDtoValidator))]
+        public async Task<ReportDto> AddAsync(ReportDto entity)
+        {
+            var report = _mapper.Map<Report>(entity);
+            await _repository.AddAsync(report);
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<ReportDto>(report);
+        }
+
+        [ValidationAspect(typeof(ReportDtoValidator))]
+        public ReportDto Add(ReportDto entity)
+        {
+            var report = _mapper.Map<Report>(entity);
+            _repository.Add(report);
+            _unitOfWork.SaveChanges();
+            return _mapper.Map<ReportDto>(report);
+        }
+
+
+        [ValidationAspect(typeof(ReportDtoValidator))]
+        public async Task<IEnumerable<ReportDto>> AddRangeAsync(IEnumerable<ReportDto> entities)
+        {
+            var reports = _mapper.Map<List<Report>>(entities);
+            await _repository.AddRangeAsync(reports);
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<IEnumerable<ReportDto>>(reports);
+        }
+
+        [ValidationAspect(typeof(ReportDtoValidator))]
+        public IEnumerable<ReportDto> AddRange(IEnumerable<ReportDto> entities)
+        {
+            var reports = _mapper.Map<List<Report>>(entities);
+            _repository.AddRange(reports);
+            _unitOfWork.SaveChanges();
+            return _mapper.Map<IEnumerable<ReportDto>>(reports);
+        }
+
+
+        [ValidationAspect(typeof(ReportDtoValidator))]
+        public async Task UpdateAsync(ReportDto entity)
+        {
+            _repository.Update(_mapper.Map<Report>(entity));
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        [ValidationAspect(typeof(ReportDtoValidator))]
+        public void Update(ReportDto entity)
+        {
+            _repository.Update(_mapper.Map<Report>(entity));
+            _unitOfWork.SaveChanges();
+        }
+
+
+        public async Task RemoveAsync(ReportDto entity)
+        {
+            _repository.Remove(_mapper.Map<Report>(entity));
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public void Remove(ReportDto entity)
+        {
+            _repository.Remove(_mapper.Map<Report>(entity));
+            _unitOfWork.SaveChanges();
+        }
+
+
+        public async Task RemoveAsync(int id)
+        {
+            var report = _repository.GetById(id);
+            if (report == null)
+                throw new ArgumentNullException(nameof(report));
+            _repository.Remove(report);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public void Remove(int id)
+        {
+            var report = _repository.GetById(id);
+            if (report == null)
+                throw new ArgumentNullException(nameof(report));
+            _repository.Remove(report);
+            _unitOfWork.SaveChanges();
+        }
+
+
+        public async Task RemoveRageAsync(IEnumerable<ReportDto> entities)
+        {
+            _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public void RemoveRage(IEnumerable<ReportDto> entities)
+        {
+            _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
+            _unitOfWork.SaveChanges();
+        }
+
+
 
 
         public List<ReportDataDto> GetReportData()
         {
-            return _repository.GetReportData();
+            var reportData = new List<ReportDataDto>();
+            _contactInformationRepository.Where(nq => nq.InformationType == Store.Enums.ContactInformationType.Location).Select(nq => nq.InformationContent).Distinct().ToList().ForEach(location =>
+            {
+                var persons = _personRepository.Where(nq => nq.ContactInformations.Any(sq => sq.InformationType == Store.Enums.ContactInformationType.Location && sq.InformationContent == location));
+                reportData.Add(new()
+                {
+                    Location = location,
+                    PersonCount = persons.Count(),
+                    PhoneCount = persons.SelectMany(nq => nq.ContactInformations).Where(nq => nq.InformationType == Store.Enums.ContactInformationType.PhoneNumber).Count()
+                });
+            });
+            return reportData;
         }
 
 
@@ -84,5 +238,6 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             return CompleteReportAsync(reportFile, reportId).Result;
         }
+
     }
 }

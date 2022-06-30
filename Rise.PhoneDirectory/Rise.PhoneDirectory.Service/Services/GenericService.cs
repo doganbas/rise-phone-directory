@@ -79,7 +79,6 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
-
         public async Task UpdateAsync(TEntity entity)
         {
             _repository.Update(entity);
@@ -92,25 +91,49 @@ namespace Rise.PhoneDirectory.Service.Services
             _unitOfWork.SaveChanges();
         }
 
-        public async Task DeleteAsync(TEntity entity)
+
+        public async Task RemoveAsync(TEntity entity)
         {
             _repository.Remove(entity);
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public void Delete(TEntity entity)
+        public void Remove(TEntity entity)
         {
             _repository.Remove(entity);
             _unitOfWork.SaveChanges();
         }
 
-        public async Task DeleteRageAsync(IEnumerable<TEntity> entities)
+        public async Task RemoveAsync(int id)
+        {
+            var removeEntity = await _repository.GetByIdAsync(id);
+
+            if (removeEntity == null)
+                throw new ArgumentNullException(nameof(removeEntity));
+
+            _repository.Remove(removeEntity);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        public void Remove(int id)
+        {
+            var removeEntity = _repository.GetById(id);
+
+            if (removeEntity == null)
+                throw new ArgumentNullException(nameof(removeEntity));
+
+            _repository.Remove(removeEntity);
+            _unitOfWork.SaveChanges();
+        }
+
+
+        public async Task RemoveRageAsync(IEnumerable<TEntity> entities)
         {
             _repository.RemoveRage(entities);
             await _unitOfWork.SaveChangesAsync();
         }
 
-        public void DeleteRage(IEnumerable<TEntity> entities)
+        public void RemoveRage(IEnumerable<TEntity> entities)
         {
             _repository.RemoveRage(entities);
             _unitOfWork.SaveChanges();
