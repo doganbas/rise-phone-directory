@@ -152,12 +152,12 @@ namespace Rise.PhoneDirectory.Service.Services
         [CacheRemoveAspect]
         public async Task RemoveAsync(int id)
         {
-            var report = _repository.GetById(id);
+            var report = await _repository.GetByIdAsync(id);
             if (report == null)
                 throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(report);
             await _unitOfWork.SaveChangesAsync();
-            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, nameof(Report));
         }
 
         [CacheRemoveAspect]
@@ -168,7 +168,7 @@ namespace Rise.PhoneDirectory.Service.Services
                 throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(report);
             _unitOfWork.SaveChanges();
-            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, nameof(Report));
         }
 
 
@@ -177,7 +177,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
             await _unitOfWork.SaveChangesAsync();
-            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, nameof(Report));
         }
 
         [CacheRemoveAspect]
@@ -185,7 +185,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
             _unitOfWork.SaveChanges();
-            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, nameof(Report));
         }
 
 

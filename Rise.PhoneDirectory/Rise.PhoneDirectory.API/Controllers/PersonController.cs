@@ -17,7 +17,7 @@ namespace Rise.PhoneDirectory.API.Controllers
         }
 
         [HttpGet]
-        public ActionResult<PersonDto> Get()
+        public ActionResult<List<PersonDto>> Get()
         {
             var persons = _service.Where().ToList();
 
@@ -41,9 +41,15 @@ namespace Rise.PhoneDirectory.API.Controllers
         [HttpPost]
         public async Task<ActionResult<PersonDto>> Post([FromBody] PersonDto personDto)
         {
-            var person = await _service.AddAsync(personDto);
-
-            return StatusCode(StatusCodes.Status201Created, person);
+            try
+            {
+                var person = await _service.AddAsync(personDto);
+                return StatusCode(StatusCodes.Status201Created, person);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex);
+            }
         }
 
         [HttpPut("{id}")]
@@ -52,16 +58,29 @@ namespace Rise.PhoneDirectory.API.Controllers
             if (personDto.Id != id)
                 return StatusCode(StatusCodes.Status400BadRequest, ProjectConst.PutIdError);
 
-            await _service.UpdateAsync(personDto);
-
-            return StatusCode(StatusCodes.Status204NoContent);
+            try
+            {
+                await _service.UpdateAsync(personDto);
+                return StatusCode(StatusCodes.Status204NoContent);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            await _service.RemoveAsync(id);
-            return StatusCode(StatusCodes.Status204NoContent);
+            try
+            {
+                await _service.RemoveAsync(id);
+                return StatusCode(StatusCodes.Status204NoContent);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
         }
 
         [HttpGet("[action]/{personId}")]

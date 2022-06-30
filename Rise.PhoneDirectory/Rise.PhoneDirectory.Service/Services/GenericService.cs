@@ -127,7 +127,7 @@ namespace Rise.PhoneDirectory.Service.Services
             var removeEntity = await _repository.GetByIdAsync(id);
 
             if (removeEntity == null)
-                throw new ArgumentNullException(nameof(removeEntity));
+                throw new Exception(ProjectConst.DeleteNotFoundError);
 
             _repository.Remove(removeEntity);
             await _unitOfWork.SaveChangesAsync();
@@ -140,7 +140,7 @@ namespace Rise.PhoneDirectory.Service.Services
             var removeEntity = _repository.GetById(id);
 
             if (removeEntity == null)
-                throw new ArgumentNullException(nameof(removeEntity));
+                throw new Exception(ProjectConst.DeleteNotFoundError);
 
             _repository.Remove(removeEntity);
             _unitOfWork.SaveChanges();

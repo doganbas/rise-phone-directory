@@ -16,7 +16,7 @@ namespace Rise.PhoneDirectory.API.Controllers
         }
 
         [HttpGet]
-        public ActionResult<ReportDto> Get()
+        public ActionResult<List<ReportDto>> Get()
         {
             var reports = _service.Where().ToList();
 
@@ -40,12 +40,19 @@ namespace Rise.PhoneDirectory.API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            await _service.RemoveAsync(id);
-            return StatusCode(StatusCodes.Status204NoContent);
+            try
+            {
+                await _service.RemoveAsync(id);
+                return StatusCode(StatusCodes.Status204NoContent);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
         }
 
         [HttpGet("GetReportData")]
-        public ActionResult<ReportDataDto> GetReportData()
+        public ActionResult<List<ReportDataDto>> GetReportData()
         {
             var reportData = _service.GetReportData();
             return StatusCode(StatusCodes.Status200OK, reportData);

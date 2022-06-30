@@ -1,14 +1,15 @@
 ﻿using OfficeOpenXml;
+using Rise.PhoneDirectory.Core.Services;
 using Rise.PhoneDirectory.Store.Dtos;
 using System.Drawing;
 
 namespace Rise.PhoneDirectory.ReportWorker.Services
 {
-    public class ExcelReportService
+    public class ExcelReportService : IExcelReportService
     {
-        private readonly ReportApiService _reportApiService;
+        private readonly IReportApiService _reportApiService;
 
-        public ExcelReportService(ReportApiService reportApiService)
+        public ExcelReportService(IReportApiService reportApiService)
         {
             _reportApiService = reportApiService;
         }

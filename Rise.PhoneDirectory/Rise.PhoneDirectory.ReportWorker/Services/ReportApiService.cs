@@ -1,10 +1,11 @@
 ﻿using Rise.PhoneDirectory.Core.Constants;
+using Rise.PhoneDirectory.Core.Services;
 using Rise.PhoneDirectory.Store.Dtos;
 using System.Net.Http.Json;
 
 namespace Rise.PhoneDirectory.ReportWorker.Services
 {
-    public class ReportApiService
+    public class ReportApiService : IReportApiService
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger<ReportApiService> _logger;
@@ -26,7 +27,7 @@ namespace Rise.PhoneDirectory.ReportWorker.Services
             return GetReportDataAsync().Result;
         }
 
-        public async Task<bool> CompleteReport(byte[] reportFile, int reportId)
+        public async Task<bool> CompleteReportAsync(byte[] reportFile, int reportId)
         {
             MultipartFormDataContent multipartFormDataContent = new()
             {
@@ -40,6 +41,11 @@ namespace Rise.PhoneDirectory.ReportWorker.Services
             }
 
             return false;
+        }
+
+        public bool CompleteReport(byte[] reportFile, int reportId)
+        {
+            return CompleteReportAsync(reportFile, reportId).Result;
         }
     }
 }
