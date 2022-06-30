@@ -243,7 +243,7 @@ namespace Rise.PhoneDirectory.Service.Services
             if (reportFile is not { Length: > 0 })
                 return false;
 
-            var report = await GetByIdAsync(reportId);
+            var report = await _repository.GetByIdAsync(reportId);
             if (report is null)
                 return false;
 
@@ -258,7 +258,7 @@ namespace Rise.PhoneDirectory.Service.Services
             report.CreatedTime = DateTime.Now;
             report.FilePath = $"/reports/{fileName}";
             report.ReportStatus = Store.Enums.ReportStatus.Completed;
-            await UpdateAsync(report);
+            await _unitOfWork.SaveChangesAsync();
             _logger.LogInformation(ProjectConst.GetReportUploadLogMessage);
 
             return true;
