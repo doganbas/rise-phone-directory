@@ -122,7 +122,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [CacheRemoveAspect]
-        public async Task RemoveAsync(int id)
+        public async Task RemoveByIdAsync(int id)
         {
             var removeEntity = await _repository.GetByIdAsync(id);
 
@@ -135,7 +135,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [CacheRemoveAspect]
-        public void Remove(int id)
+        public void RemoveById(int id)
         {
             var removeEntity = _repository.GetById(id);
 

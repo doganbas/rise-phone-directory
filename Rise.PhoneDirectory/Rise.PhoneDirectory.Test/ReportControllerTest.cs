@@ -104,7 +104,7 @@ namespace Rise.PhoneDirectory.Test
             _mockRepository.Setup(nq => nq.GetByIdAsync(reportId)).ReturnsAsync(report);
             var result = await _controller.Delete(reportId);
             var objectResult = Assert.IsAssignableFrom<ObjectResult>(result);
-            var exceptionResult = Assert.IsType<Exception>(objectResult.Value);
+            var exceptionResult = Assert.IsType<string>(objectResult.Value);
             Assert.Equal(StatusCodes.Status500InternalServerError, objectResult?.StatusCode);
         }
 
@@ -146,13 +146,7 @@ namespace Rise.PhoneDirectory.Test
             Assert.True(returnReports.Count > 0);
         }
 
-        //public void CreateReport_ActionExecutes_ReturnCreatedResult()
-        //{
-        //    _mockRepository.Setup(nq => nq.AddAsync(new Report() { ReportStatus = Store.Enums.ReportStatus.ToBe, RequestTime = DateTime.Now })).Returns(Task.CompletedTask);
-
-        //}
-
-        //CreateReport
-        //CompleteReport
+        ///TODO: CreateReportTest
+        ///TODO: CompleteReportTest
     }
 }

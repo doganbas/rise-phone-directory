@@ -161,7 +161,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [CacheRemoveAspect]
-        public async Task RemoveAsync(int id)
+        public async Task RemoveByIdAsync(int id)
         {
             var person = await _repository.GetByIdAsync(id);
             if (person == null)
@@ -172,7 +172,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [CacheRemoveAspect]
-        public void Remove(int id)
+        public void RemoveById(int id)
         {
             var person = _repository.GetById(id);
             if (person == null)

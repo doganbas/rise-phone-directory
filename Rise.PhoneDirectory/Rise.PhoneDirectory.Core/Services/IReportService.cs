@@ -40,9 +40,9 @@ namespace Rise.PhoneDirectory.Core.Services
         void Remove(ReportDto entity);
 
 
-        Task RemoveAsync(int id);
+        Task RemoveByIdAsync(int id);
 
-        void Remove(int id);
+        void RemoveById(int id);
 
 
         Task RemoveRageAsync(IEnumerable<ReportDto> entities);

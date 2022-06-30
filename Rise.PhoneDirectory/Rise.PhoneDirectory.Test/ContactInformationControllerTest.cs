@@ -132,7 +132,7 @@ namespace Rise.PhoneDirectory.Test
             _mockRepository.Setup(nq => nq.GetByIdAsync(contactId)).ReturnsAsync(contact);
             var result = await _controller.Delete(contactId);
             var objectResult = Assert.IsAssignableFrom<ObjectResult>(result);
-            var exceptionResult = Assert.IsType<Exception>(objectResult.Value);
+            var exceptionResult = Assert.IsType<string>(objectResult.Value);
             Assert.Equal(StatusCodes.Status500InternalServerError, objectResult?.StatusCode);
         }
 

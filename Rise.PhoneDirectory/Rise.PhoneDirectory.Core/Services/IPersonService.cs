@@ -39,9 +39,9 @@ namespace Rise.PhoneDirectory.Core.Services
         void Remove(PersonDto entity);
 
 
-        Task RemoveAsync(int id);
+        Task RemoveByIdAsync(int id);
 
-        void Remove(int id);
+        void RemoveById(int id);
 
 
         Task RemoveRageAsync(IEnumerable<PersonDto> entities);
