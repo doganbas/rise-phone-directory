@@ -142,7 +142,10 @@ namespace Rise.PhoneDirectory.Service.Services
         [CacheRemoveAspect]
         public async Task RemoveAsync(int id)
         {
-            var contactInformation = _repository.GetById(id);
+            var contactInformation = await _repository.GetByIdAsync(id);
+            if (contactInformation == null)
+                throw new Exception(ProjectConst.DeleteNotFoundError);
+
             _repository.Remove(contactInformation);
             await _unitOfWork.SaveChangesAsync();
             _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(ContactInformation).Name);
@@ -152,6 +155,9 @@ namespace Rise.PhoneDirectory.Service.Services
         public void Remove(int id)
         {
             var contactInformation = _repository.GetById(id);
+            if (contactInformation == null)
+                throw new Exception(ProjectConst.DeleteNotFoundError);
+
             _repository.Remove(contactInformation);
             _unitOfWork.SaveChanges();
             _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(ContactInformation).Name);

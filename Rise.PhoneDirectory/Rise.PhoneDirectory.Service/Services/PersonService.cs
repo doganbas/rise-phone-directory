@@ -124,7 +124,7 @@ namespace Rise.PhoneDirectory.Service.Services
         [CacheRemoveAspect]
         public async Task UpdateAsync(PersonDto entity)
         {
-            if (_repository.Any(nq => nq.PersonId != entity.Id && nq.Name == entity.Name && nq.Surname == entity.Surname))
+            if (await _repository.AnyAsync(nq => nq.PersonId != entity.Id && nq.Name == entity.Name && nq.Surname == entity.Surname))
                 throw new ValidationException(ValidationMessages.PersonNameUniqueError);
 
             _repository.Update(_mapper.Map<Person>(entity));
@@ -163,7 +163,7 @@ namespace Rise.PhoneDirectory.Service.Services
         [CacheRemoveAspect]
         public async Task RemoveAsync(int id)
         {
-            var person = _repository.GetById(id);
+            var person = await _repository.GetByIdAsync(id);
             if (person == null)
                 throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(person);
@@ -176,7 +176,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             var person = _repository.GetById(id);
             if (person == null)
-                throw new ArgumentNullException(nameof(person));
+                throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(person);
             _unitOfWork.SaveChanges();
             _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);

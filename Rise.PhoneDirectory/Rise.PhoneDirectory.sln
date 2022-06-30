@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rise.PhoneDirectory.Store", "Rise.PhoneDirectory.Store\Rise.PhoneDirectory.Store.csproj", "{6E66CF31-0D85-47F7-B04C-A333E5C6F206}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rise.PhoneDirectory.Store", "Rise.PhoneDirectory.Store\Rise.PhoneDirectory.Store.csproj", "{6E66CF31-0D85-47F7-B04C-A333E5C6F206}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rise.PhoneDirectory.Core", "Rise.PhoneDirectory.Core\Rise.PhoneDirectory.Core.csproj", "{33206BF2-F8A3-46D0-A4C4-F5CACA74EB1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rise.PhoneDirectory.Core", "Rise.PhoneDirectory.Core\Rise.PhoneDirectory.Core.csproj", "{33206BF2-F8A3-46D0-A4C4-F5CACA74EB1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rise.PhoneDirectory.Repository", "Rise.PhoneDirectory.Repository\Rise.PhoneDirectory.Repository.csproj", "{0F14BA28-2F43-4FAC-B3FF-24DECF52D9AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rise.PhoneDirectory.Repository", "Rise.PhoneDirectory.Repository\Rise.PhoneDirectory.Repository.csproj", "{0F14BA28-2F43-4FAC-B3FF-24DECF52D9AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rise.PhoneDirectory.Service", "Rise.PhoneDirectory.Service\Rise.PhoneDirectory.Service.csproj", "{FAEF1F1F-5874-4A04-AED4-60EC408B9EF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rise.PhoneDirectory.Service", "Rise.PhoneDirectory.Service\Rise.PhoneDirectory.Service.csproj", "{FAEF1F1F-5874-4A04-AED4-60EC408B9EF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rise.PhoneDirectory.API", "Rise.PhoneDirectory.API\Rise.PhoneDirectory.API.csproj", "{E2AB01E3-C26B-4A42-A2B2-FF7C1B0DEECF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rise.PhoneDirectory.API", "Rise.PhoneDirectory.API\Rise.PhoneDirectory.API.csproj", "{E2AB01E3-C26B-4A42-A2B2-FF7C1B0DEECF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rise.PhoneDirectory.ReportWorker", "Rise.PhoneDirectory.ReportWorker\Rise.PhoneDirectory.ReportWorker.csproj", "{213589E7-1EA9-4471-9DC9-CF07F9869D45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rise.PhoneDirectory.ReportWorker", "Rise.PhoneDirectory.ReportWorker\Rise.PhoneDirectory.ReportWorker.csproj", "{213589E7-1EA9-4471-9DC9-CF07F9869D45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rise.PhoneDirectory.Test", "Rise.PhoneDirectory.Test\Rise.PhoneDirectory.Test.csproj", "{ED60E8B9-F1BE-4913-B02E-39CFDAD3B3E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{213589E7-1EA9-4471-9DC9-CF07F9869D45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{213589E7-1EA9-4471-9DC9-CF07F9869D45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{213589E7-1EA9-4471-9DC9-CF07F9869D45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED60E8B9-F1BE-4913-B02E-39CFDAD3B3E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED60E8B9-F1BE-4913-B02E-39CFDAD3B3E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED60E8B9-F1BE-4913-B02E-39CFDAD3B3E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED60E8B9-F1BE-4913-B02E-39CFDAD3B3E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

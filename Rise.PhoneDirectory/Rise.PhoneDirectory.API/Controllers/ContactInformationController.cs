@@ -18,7 +18,7 @@ namespace Rise.PhoneDirectory.API.Controllers
 
 
         [HttpGet]
-        public ActionResult<ContactInformationDto> Get()
+        public ActionResult<List<ContactInformationDto>> Get()
         {
             var contactInforations = _service.Where().ToList();
 
@@ -42,9 +42,15 @@ namespace Rise.PhoneDirectory.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ContactInformationDto>> Post([FromBody] ContactInformationDto contactInformationDto)
         {
-            var contactInformation = await _service.AddAsync(contactInformationDto);
-
-            return StatusCode(StatusCodes.Status201Created, contactInformation);
+            try
+            {
+                var contactInformation = await _service.AddAsync(contactInformationDto);
+                return StatusCode(StatusCodes.Status201Created, contactInformation);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex);
+            }
         }
 
         [HttpPut("{id}")]
@@ -53,17 +59,30 @@ namespace Rise.PhoneDirectory.API.Controllers
             if (contactInformationDto.Id != id)
                 return StatusCode(StatusCodes.Status400BadRequest, ProjectConst.PutIdError);
 
-            await _service.UpdateAsync(contactInformationDto);
 
-            return StatusCode(StatusCodes.Status204NoContent);
+            try
+            {
+                await _service.UpdateAsync(contactInformationDto);
+                return StatusCode(StatusCodes.Status204NoContent);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            await _service.RemoveAsync(id);
-
-            return StatusCode(StatusCodes.Status204NoContent);
+            try
+            {
+                await _service.RemoveAsync(id);
+                return StatusCode(StatusCodes.Status204NoContent);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
         }
     }
 }
