@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 
 namespace Rise.PhoneDirectory.Service.Services
 {
+    [ExceptionLogAspect]
     public class PersonService : IPersonService
     {
         private readonly IPersonRepository _repository;

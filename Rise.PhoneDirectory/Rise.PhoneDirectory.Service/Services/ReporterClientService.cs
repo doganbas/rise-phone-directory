@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using Rise.PhoneDirectory.Core.Aspects;
 using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Services;
 
 namespace Rise.PhoneDirectory.Service.Services
 {
+    [ExceptionLogAspect]
     public class ReporterClientService : IReporterClientService
     {
         private readonly ILogger<ReporterClientService> _logger;

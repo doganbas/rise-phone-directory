@@ -10,6 +10,7 @@ using System.Linq.Expressions;
 
 namespace Rise.PhoneDirectory.Service.Services
 {
+    [ExceptionLogAspect]
     public class ContactInformationService : IContactInformationService
     {
         private readonly IGenericRepository<ContactInformation> _repository;

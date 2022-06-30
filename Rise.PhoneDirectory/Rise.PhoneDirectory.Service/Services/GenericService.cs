@@ -1,4 +1,5 @@
-﻿using Rise.PhoneDirectory.Core.Repositories;
+﻿using Rise.PhoneDirectory.Core.Aspects;
+using Rise.PhoneDirectory.Core.Repositories;
 using Rise.PhoneDirectory.Core.Services;
 using Rise.PhoneDirectory.Core.UnitOfWorks;
 using Rise.PhoneDirectory.Store.Abstract;
@@ -6,6 +7,7 @@ using System.Linq.Expressions;
 
 namespace Rise.PhoneDirectory.Service.Services
 {
+    [ExceptionLogAspect]
     public class GenericService<TEntity> : IGenericService<TEntity>
         where TEntity : class, IEntity, new()
     {
@@ -19,17 +21,20 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheAspect]
         public async Task<TEntity> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
         }
 
+        [CacheAspect]
         public TEntity GetById(int id)
         {
             return _repository.GetById(id);
         }
 
 
+        [CacheAspect]
         public IQueryable<TEntity> Where(Expression<Func<TEntity, bool>> expression = null)
         {
             return _repository.Where(expression);
@@ -47,7 +52,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
-
+        [CacheRemoveAspect]
         public async Task<TEntity> AddAsync(TEntity entity)
         {
             await _repository.AddAsync(entity);
@@ -55,6 +60,7 @@ namespace Rise.PhoneDirectory.Service.Services
             return entity;
         }
 
+        [CacheRemoveAspect]
         public TEntity Add(TEntity entity)
         {
             _repository.Add(entity);
@@ -63,7 +69,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
-
+        [CacheRemoveAspect]
         public async Task<IEnumerable<TEntity>> AddRangeAsync(IEnumerable<TEntity> entities)
         {
             await _repository.AddRangeAsync(entities);
@@ -71,6 +77,7 @@ namespace Rise.PhoneDirectory.Service.Services
             return entities;
         }
 
+        [CacheRemoveAspect]
         public IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities)
         {
             _repository.AddRange(entities);
@@ -79,12 +86,14 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task UpdateAsync(TEntity entity)
         {
             _repository.Update(entity);
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void Update(TEntity entity)
         {
             _repository.Update(entity);
@@ -92,18 +101,21 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(TEntity entity)
         {
             _repository.Remove(entity);
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void Remove(TEntity entity)
         {
             _repository.Remove(entity);
             _unitOfWork.SaveChanges();
         }
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(int id)
         {
             var removeEntity = await _repository.GetByIdAsync(id);
@@ -115,6 +127,7 @@ namespace Rise.PhoneDirectory.Service.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void Remove(int id)
         {
             var removeEntity = _repository.GetById(id);
@@ -127,12 +140,14 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveRageAsync(IEnumerable<TEntity> entities)
         {
             _repository.RemoveRage(entities);
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void RemoveRage(IEnumerable<TEntity> entities)
         {
             _repository.RemoveRage(entities);

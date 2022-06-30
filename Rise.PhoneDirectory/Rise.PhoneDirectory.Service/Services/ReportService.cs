@@ -15,6 +15,7 @@ using System.Text.Json;
 
 namespace Rise.PhoneDirectory.Service.Services
 {
+    [ExceptionLogAspect]
     public class ReportService : IReportService
     {
         private readonly IReporterClientService _reporterClientService;
