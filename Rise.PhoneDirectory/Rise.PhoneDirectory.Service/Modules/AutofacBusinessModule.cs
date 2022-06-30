@@ -2,6 +2,7 @@
 using Autofac.Builder;
 using Autofac.Extras.DynamicProxy;
 using Castle.DynamicProxy;
+using Rise.PhoneDirectory.Core.Caching;
 using Rise.PhoneDirectory.Core.Interceptors;
 using Rise.PhoneDirectory.Core.Repositories;
 using Rise.PhoneDirectory.Core.Services;
@@ -22,6 +23,7 @@ namespace Rise.PhoneDirectory.Service.Modules
         {
             builder.RegisterGeneric(typeof(GenericRepository<>)).As(typeof(IGenericRepository<>)).RegisterInterceptors().InstancePerLifetimeScope();
             builder.RegisterGeneric(typeof(GenericService<>)).As(typeof(IGenericService<>)).RegisterInterceptors().InstancePerLifetimeScope();
+            builder.RegisterType<MemoryCacheManager>().As(typeof(ICacheManager)).SingleInstance();
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
 
             var apiAssembly = Assembly.GetExecutingAssembly();

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Rise.PhoneDirectory.Core.Aspects;
 using Rise.PhoneDirectory.Core.Constants;
@@ -15,16 +16,18 @@ using System.Text.Json;
 
 namespace Rise.PhoneDirectory.Service.Services
 {
+    [ExceptionLogAspect]
     public class ReportService : IReportService
     {
         private readonly IReporterClientService _reporterClientService;
         private readonly IGenericRepository<ContactInformation> _contactInformationRepository;
         private readonly IGenericRepository<Report> _repository;
+        private readonly ILogger<ReportService> _logger;
         private readonly IPersonRepository _personRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ReportService(IUnitOfWork unitOfWork, IGenericRepository<Report> repository, IPersonRepository personRepository, IMapper mapper, IReporterClientService reporterClientService, IGenericRepository<ContactInformation> contactInformationRepository)
+        public ReportService(IUnitOfWork unitOfWork, IGenericRepository<Report> repository, IPersonRepository personRepository, IMapper mapper, IReporterClientService reporterClientService, IGenericRepository<ContactInformation> contactInformationRepository, ILogger<ReportService> logger)
         {
             _repository = repository;
             _personRepository = personRepository; ;
@@ -32,15 +35,18 @@ namespace Rise.PhoneDirectory.Service.Services
             _mapper = mapper;
             _reporterClientService = reporterClientService;
             _contactInformationRepository = contactInformationRepository;
+            _logger = logger;
         }
 
 
+        [CacheAspect]
         public async Task<ReportDto> GetByIdAsync(int id)
         {
             var report = await _repository.GetByIdAsync(id);
             return _mapper.Map<ReportDto>(report);
         }
 
+        [CacheAspect]
         public ReportDto GetById(int id)
         {
             var report = _repository.GetById(id);
@@ -48,6 +54,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheAspect]
         public IEnumerable<ReportDto> Where(Expression<Func<Report, bool>> expression = null)
         {
             var reports = _repository.Where(expression).ToList();
@@ -67,6 +74,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public async Task<ReportDto> AddAsync(ReportDto entity)
         {
             var report = _mapper.Map<Report>(entity);
@@ -76,6 +84,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public ReportDto Add(ReportDto entity)
         {
             var report = _mapper.Map<Report>(entity);
@@ -86,6 +95,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public async Task<IEnumerable<ReportDto>> AddRangeAsync(IEnumerable<ReportDto> entities)
         {
             var reports = _mapper.Map<List<Report>>(entities);
@@ -95,6 +105,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public IEnumerable<ReportDto> AddRange(IEnumerable<ReportDto> entities)
         {
             var reports = _mapper.Map<List<Report>>(entities);
@@ -105,6 +116,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public async Task UpdateAsync(ReportDto entity)
         {
             _repository.Update(_mapper.Map<Report>(entity));
@@ -112,6 +124,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public void Update(ReportDto entity)
         {
             _repository.Update(_mapper.Map<Report>(entity));
@@ -119,53 +132,65 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(ReportDto entity)
         {
             _repository.Remove(_mapper.Map<Report>(entity));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, nameof(Report));
         }
 
+        [CacheRemoveAspect]
         public void Remove(ReportDto entity)
         {
             _repository.Remove(_mapper.Map<Report>(entity));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, nameof(Report));
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(int id)
         {
             var report = _repository.GetById(id);
             if (report == null)
-                throw new ArgumentNullException(nameof(report));
+                throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(report);
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
         }
 
+        [CacheRemoveAspect]
         public void Remove(int id)
         {
             var report = _repository.GetById(id);
             if (report == null)
-                throw new ArgumentNullException(nameof(report));
+                throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(report);
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveRageAsync(IEnumerable<ReportDto> entities)
         {
             _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
         }
 
+        [CacheRemoveAspect]
         public void RemoveRage(IEnumerable<ReportDto> entities)
         {
             _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
         }
 
 
 
-
+        [CacheAspect]
         public List<ReportDataDto> GetReportData()
         {
             var reportData = new List<ReportDataDto>();
@@ -179,6 +204,8 @@ namespace Rise.PhoneDirectory.Service.Services
                     PhoneCount = persons.SelectMany(nq => nq.ContactInformations).Where(nq => nq.InformationType == Store.Enums.ContactInformationType.PhoneNumber).Count()
                 });
             });
+            _logger.LogInformation(ProjectConst.GetReportDataLogMessage);
+
             return reportData;
         }
 
@@ -200,6 +227,8 @@ namespace Rise.PhoneDirectory.Service.Services
             var properties = channel.CreateBasicProperties();
             properties.Persistent = true;
             channel.BasicPublish(exchange: ProjectConst.ExcelReportExchangeName, routingKey: ProjectConst.ExcelReportRouting, basicProperties: properties, body: bodyByte);
+            _logger.LogInformation(ProjectConst.GetReportExcelLogMessage);
+
             return true;
         }
 
@@ -218,7 +247,7 @@ namespace Rise.PhoneDirectory.Service.Services
             if (report is null)
                 return false;
 
-            var fileName = Guid.NewGuid().ToString().Substring(0, 10) + Path.GetExtension(reportFile.FileName);
+            var fileName = Guid.NewGuid().ToString()[..10] + Path.GetExtension(reportFile.FileName);
             var saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/reports");
             var savePath = Path.Combine(saveDirectory, fileName);
             if (!Directory.Exists(saveDirectory))
@@ -230,6 +259,7 @@ namespace Rise.PhoneDirectory.Service.Services
             report.FilePath = $"/reports/{fileName}";
             report.ReportStatus = Store.Enums.ReportStatus.Completed;
             await UpdateAsync(report);
+            _logger.LogInformation(ProjectConst.GetReportUploadLogMessage);
 
             return true;
         }

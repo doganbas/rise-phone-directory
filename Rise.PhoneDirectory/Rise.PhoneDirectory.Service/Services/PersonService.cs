@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Rise.PhoneDirectory.Core.Aspects;
 using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Repositories;
@@ -12,26 +13,31 @@ using System.Linq.Expressions;
 
 namespace Rise.PhoneDirectory.Service.Services
 {
+    [ExceptionLogAspect]
     public class PersonService : IPersonService
     {
         private readonly IPersonRepository _repository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ILogger<PersonService> _logger;
 
-        public PersonService(IPersonRepository repository, IUnitOfWork unitOfWork, IMapper mapper)
+        public PersonService(IPersonRepository repository, IUnitOfWork unitOfWork, IMapper mapper, ILogger<PersonService> logger)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
 
 
+        [CacheAspect]
         public async Task<PersonDto> GetByIdAsync(int id)
         {
             var person = await _repository.GetByIdAsync(id);
             return _mapper.Map<PersonDto>(person);
         }
 
+        [CacheAspect]
         public PersonDto GetById(int id)
         {
             var person = _repository.GetById(id);
@@ -39,6 +45,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheAspect]
         public IEnumerable<PersonDto> Where(Expression<Func<Person, bool>> expression = null)
         {
             var persons = _repository.Where(expression).ToList();
@@ -58,6 +65,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public async Task<PersonDto> AddAsync(PersonDto entity)
         {
             var person = _mapper.Map<Person>(entity);
@@ -70,6 +78,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public PersonDto Add(PersonDto entity)
         {
             var person = _mapper.Map<Person>(entity);
@@ -83,6 +92,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public async Task<IEnumerable<PersonDto>> AddRangeAsync(IEnumerable<PersonDto> entities)
         {
             var persons = _mapper.Map<List<Person>>(entities);
@@ -96,6 +106,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public IEnumerable<PersonDto> AddRange(IEnumerable<PersonDto> entities)
         {
             var persons = _mapper.Map<List<Person>>(entities);
@@ -110,6 +121,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public async Task UpdateAsync(PersonDto entity)
         {
             if (_repository.Any(nq => nq.PersonId != entity.Id && nq.Name == entity.Name && nq.Surname == entity.Surname))
@@ -120,6 +132,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public void Update(PersonDto entity)
         {
             if (_repository.Any(nq => nq.PersonId != entity.Id && nq.Name == entity.Name && nq.Surname == entity.Surname))
@@ -130,28 +143,35 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(PersonDto entity)
         {
             _repository.Remove(_mapper.Map<Person>(entity));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
+        [CacheRemoveAspect]
         public void Remove(PersonDto entity)
         {
             _repository.Remove(_mapper.Map<Person>(entity));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(int id)
         {
             var person = _repository.GetById(id);
             if (person == null)
-                throw new ArgumentNullException(nameof(person));
+                throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(person);
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
+        [CacheRemoveAspect]
         public void Remove(int id)
         {
             var person = _repository.GetById(id);
@@ -159,28 +179,35 @@ namespace Rise.PhoneDirectory.Service.Services
                 throw new ArgumentNullException(nameof(person));
             _repository.Remove(person);
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveRageAsync(IEnumerable<PersonDto> entities)
         {
             _repository.RemoveRage(_mapper.Map<List<Person>>(entities));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
+        [CacheRemoveAspect]
         public void RemoveRage(IEnumerable<PersonDto> entities)
         {
             _repository.RemoveRage(_mapper.Map<List<Person>>(entities));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
 
+        [CacheAspect]
         public async Task<PersonWithContactInfoDto> GetPersonByIdWithContactInformationAsync(int personId)
         {
             var person = await _repository.GetPersonByIdWithContactInformationAsync(personId);
             return _mapper.Map<PersonWithContactInfoDto>(person);
         }
 
+        [CacheAspect]
         public PersonWithContactInfoDto GetPersonByIdWithContactInformation(int personId)
         {
             var person = _repository.GetPersonByIdWithContactInformation(personId);
