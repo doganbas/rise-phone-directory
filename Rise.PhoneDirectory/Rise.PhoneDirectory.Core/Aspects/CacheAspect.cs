@@ -7,8 +7,8 @@ namespace Rise.PhoneDirectory.Core.Aspects
 {
     public class CacheAspect : MethodInterception
     {
-        int _duration;
-        private ICacheManager _cacheManager;
+        private readonly int _duration;
+        private readonly ICacheManager _cacheManager;
 
         public CacheAspect(int duration = 10)
         {

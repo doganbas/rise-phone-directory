@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Rise.PhoneDirectory.Core.Aspects;
 using Rise.PhoneDirectory.Core.Constants;
@@ -21,11 +22,12 @@ namespace Rise.PhoneDirectory.Service.Services
         private readonly IReporterClientService _reporterClientService;
         private readonly IGenericRepository<ContactInformation> _contactInformationRepository;
         private readonly IGenericRepository<Report> _repository;
+        private readonly ILogger<ReportService> _logger;
         private readonly IPersonRepository _personRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ReportService(IUnitOfWork unitOfWork, IGenericRepository<Report> repository, IPersonRepository personRepository, IMapper mapper, IReporterClientService reporterClientService, IGenericRepository<ContactInformation> contactInformationRepository)
+        public ReportService(IUnitOfWork unitOfWork, IGenericRepository<Report> repository, IPersonRepository personRepository, IMapper mapper, IReporterClientService reporterClientService, IGenericRepository<ContactInformation> contactInformationRepository, ILogger<ReportService> logger)
         {
             _repository = repository;
             _personRepository = personRepository; ;
@@ -33,6 +35,7 @@ namespace Rise.PhoneDirectory.Service.Services
             _mapper = mapper;
             _reporterClientService = reporterClientService;
             _contactInformationRepository = contactInformationRepository;
+            _logger = logger;
         }
 
 
@@ -134,6 +137,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.Remove(_mapper.Map<Report>(entity));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, nameof(Report));
         }
 
         [CacheRemoveAspect]
@@ -141,6 +145,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.Remove(_mapper.Map<Report>(entity));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, nameof(Report));
         }
 
 
@@ -149,9 +154,10 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             var report = _repository.GetById(id);
             if (report == null)
-                throw new ArgumentNullException(nameof(report));
+                throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(report);
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
         }
 
         [CacheRemoveAspect]
@@ -159,9 +165,10 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             var report = _repository.GetById(id);
             if (report == null)
-                throw new ArgumentNullException(nameof(report));
+                throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(report);
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
         }
 
 
@@ -170,6 +177,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
         }
 
         [CacheRemoveAspect]
@@ -177,6 +185,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Report).Name);
         }
 
 
@@ -195,6 +204,8 @@ namespace Rise.PhoneDirectory.Service.Services
                     PhoneCount = persons.SelectMany(nq => nq.ContactInformations).Where(nq => nq.InformationType == Store.Enums.ContactInformationType.PhoneNumber).Count()
                 });
             });
+            _logger.LogInformation(ProjectConst.GetReportDataLogMessage);
+
             return reportData;
         }
 
@@ -216,6 +227,8 @@ namespace Rise.PhoneDirectory.Service.Services
             var properties = channel.CreateBasicProperties();
             properties.Persistent = true;
             channel.BasicPublish(exchange: ProjectConst.ExcelReportExchangeName, routingKey: ProjectConst.ExcelReportRouting, basicProperties: properties, body: bodyByte);
+            _logger.LogInformation(ProjectConst.GetReportExcelLogMessage);
+
             return true;
         }
 
@@ -234,7 +247,7 @@ namespace Rise.PhoneDirectory.Service.Services
             if (report is null)
                 return false;
 
-            var fileName = Guid.NewGuid().ToString().Substring(0, 10) + Path.GetExtension(reportFile.FileName);
+            var fileName = Guid.NewGuid().ToString()[..10] + Path.GetExtension(reportFile.FileName);
             var saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/reports");
             var savePath = Path.Combine(saveDirectory, fileName);
             if (!Directory.Exists(saveDirectory))
@@ -246,6 +259,7 @@ namespace Rise.PhoneDirectory.Service.Services
             report.FilePath = $"/reports/{fileName}";
             report.ReportStatus = Store.Enums.ReportStatus.Completed;
             await UpdateAsync(report);
+            _logger.LogInformation(ProjectConst.GetReportUploadLogMessage);
 
             return true;
         }

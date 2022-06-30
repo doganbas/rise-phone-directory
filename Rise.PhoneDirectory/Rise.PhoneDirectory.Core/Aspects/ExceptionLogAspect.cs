@@ -7,7 +7,7 @@ namespace Rise.PhoneDirectory.Core.Aspects
 {
     public class ExceptionLogAspect : MethodInterception
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public ExceptionLogAspect()
         {

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Rise.PhoneDirectory.Core.Aspects;
 using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Repositories;
@@ -18,12 +19,14 @@ namespace Rise.PhoneDirectory.Service.Services
         private readonly IPersonRepository _repository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ILogger<PersonService> _logger;
 
-        public PersonService(IPersonRepository repository, IUnitOfWork unitOfWork, IMapper mapper)
+        public PersonService(IPersonRepository repository, IUnitOfWork unitOfWork, IMapper mapper, ILogger<PersonService> logger)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
 
 
@@ -145,6 +148,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.Remove(_mapper.Map<Person>(entity));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
         [CacheRemoveAspect]
@@ -152,6 +156,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.Remove(_mapper.Map<Person>(entity));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
 
@@ -160,9 +165,10 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             var person = _repository.GetById(id);
             if (person == null)
-                throw new ArgumentNullException(nameof(person));
+                throw new Exception(ProjectConst.DeleteNotFoundError);
             _repository.Remove(person);
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
         [CacheRemoveAspect]
@@ -173,6 +179,7 @@ namespace Rise.PhoneDirectory.Service.Services
                 throw new ArgumentNullException(nameof(person));
             _repository.Remove(person);
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
 
@@ -181,6 +188,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(_mapper.Map<List<Person>>(entities));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
         [CacheRemoveAspect]
@@ -188,6 +196,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(_mapper.Map<List<Person>>(entities));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(Person).Name);
         }
 
 

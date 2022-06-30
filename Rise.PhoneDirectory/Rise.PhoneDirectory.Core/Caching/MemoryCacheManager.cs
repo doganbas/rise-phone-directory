@@ -5,7 +5,7 @@ namespace Rise.PhoneDirectory.Core.Caching
 {
     public class MemoryCacheManager : ICacheManager
     {
-        private IMemoryCache _memoryCache;
+        private readonly IMemoryCache _memoryCache;
 
         public MemoryCacheManager(IMemoryCache memoryCache)
         {

@@ -1,4 +1,6 @@
-﻿using Rise.PhoneDirectory.Core.Aspects;
+﻿using Microsoft.Extensions.Logging;
+using Rise.PhoneDirectory.Core.Aspects;
+using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Repositories;
 using Rise.PhoneDirectory.Core.Services;
 using Rise.PhoneDirectory.Core.UnitOfWorks;
@@ -13,11 +15,13 @@ namespace Rise.PhoneDirectory.Service.Services
     {
         private readonly IGenericRepository<TEntity> _repository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<TEntity> _logger;
 
-        public GenericService(IUnitOfWork unitOfWork, IGenericRepository<TEntity> repository)
+        public GenericService(IUnitOfWork unitOfWork, IGenericRepository<TEntity> repository, ILogger<TEntity> logger)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
 
@@ -106,6 +110,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.Remove(entity);
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(TEntity).Name);
         }
 
         [CacheRemoveAspect]
@@ -113,6 +118,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.Remove(entity);
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(TEntity).Name);
         }
 
         [CacheRemoveAspect]
@@ -125,6 +131,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
             _repository.Remove(removeEntity);
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(TEntity).Name);
         }
 
         [CacheRemoveAspect]
@@ -137,6 +144,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
             _repository.Remove(removeEntity);
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(TEntity).Name);
         }
 
 
@@ -145,6 +153,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(entities);
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(TEntity).Name);
         }
 
         [CacheRemoveAspect]
@@ -152,6 +161,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(entities);
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(TEntity).Name);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Rise.PhoneDirectory.Core.Aspects;
+using Rise.PhoneDirectory.Core.Constants;
 using Rise.PhoneDirectory.Core.Repositories;
 using Rise.PhoneDirectory.Core.Services;
 using Rise.PhoneDirectory.Core.UnitOfWorks;
@@ -16,12 +18,14 @@ namespace Rise.PhoneDirectory.Service.Services
         private readonly IGenericRepository<ContactInformation> _repository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ILogger<ContactInformationService> _logger;
 
-        public ContactInformationService(IGenericRepository<ContactInformation> repository, IUnitOfWork unitOfWork, IMapper mapper)
+        public ContactInformationService(IGenericRepository<ContactInformation> repository, IUnitOfWork unitOfWork, IMapper mapper, ILogger<ContactInformationService> logger)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
 
 
@@ -123,6 +127,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.Remove(_mapper.Map<ContactInformation>(entity));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(ContactInformation).Name);
         }
 
         [CacheRemoveAspect]
@@ -130,6 +135,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.Remove(_mapper.Map<ContactInformation>(entity));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(ContactInformation).Name);
         }
 
 
@@ -139,6 +145,7 @@ namespace Rise.PhoneDirectory.Service.Services
             var contactInformation = _repository.GetById(id);
             _repository.Remove(contactInformation);
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(ContactInformation).Name);
         }
 
         [CacheRemoveAspect]
@@ -147,6 +154,7 @@ namespace Rise.PhoneDirectory.Service.Services
             var contactInformation = _repository.GetById(id);
             _repository.Remove(contactInformation);
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(ContactInformation).Name);
         }
 
 
@@ -155,6 +163,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(_mapper.Map<List<ContactInformation>>(entities));
             await _unitOfWork.SaveChangesAsync();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(ContactInformation).Name);
         }
 
         [CacheRemoveAspect]
@@ -162,6 +171,7 @@ namespace Rise.PhoneDirectory.Service.Services
         {
             _repository.RemoveRage(_mapper.Map<List<ContactInformation>>(entities));
             _unitOfWork.SaveChanges();
+            _logger.LogInformation(ProjectConst.DeleteLogMessage, typeof(ContactInformation).Name);
         }
 
 
