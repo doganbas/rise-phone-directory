@@ -2,6 +2,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
+using Rise.PhoneDirectory.Core.Tools;
 using Rise.PhoneDirectory.Repository;
 using Rise.PhoneDirectory.Service.Mappings;
 using Rise.PhoneDirectory.Service.Modules;
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
 
 builder.Services.AddDbContext<PhoneDirectoryDbContext>(opts =>
 {
@@ -32,6 +34,8 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 });
 
 var app = builder.Build();
+ServiceTool.Set(app.Services);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

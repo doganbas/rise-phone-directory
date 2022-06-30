@@ -26,12 +26,14 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheAspect]
         public async Task<PersonDto> GetByIdAsync(int id)
         {
             var person = await _repository.GetByIdAsync(id);
             return _mapper.Map<PersonDto>(person);
         }
 
+        [CacheAspect]
         public PersonDto GetById(int id)
         {
             var person = _repository.GetById(id);
@@ -39,6 +41,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheAspect]
         public IEnumerable<PersonDto> Where(Expression<Func<Person, bool>> expression = null)
         {
             var persons = _repository.Where(expression).ToList();
@@ -58,6 +61,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public async Task<PersonDto> AddAsync(PersonDto entity)
         {
             var person = _mapper.Map<Person>(entity);
@@ -70,6 +74,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public PersonDto Add(PersonDto entity)
         {
             var person = _mapper.Map<Person>(entity);
@@ -83,6 +88,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public async Task<IEnumerable<PersonDto>> AddRangeAsync(IEnumerable<PersonDto> entities)
         {
             var persons = _mapper.Map<List<Person>>(entities);
@@ -96,6 +102,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public IEnumerable<PersonDto> AddRange(IEnumerable<PersonDto> entities)
         {
             var persons = _mapper.Map<List<Person>>(entities);
@@ -110,6 +117,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public async Task UpdateAsync(PersonDto entity)
         {
             if (_repository.Any(nq => nq.PersonId != entity.Id && nq.Name == entity.Name && nq.Surname == entity.Surname))
@@ -120,6 +128,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(PersonDtoValidator))]
+        [CacheRemoveAspect]
         public void Update(PersonDto entity)
         {
             if (_repository.Any(nq => nq.PersonId != entity.Id && nq.Name == entity.Name && nq.Surname == entity.Surname))
@@ -130,12 +139,14 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(PersonDto entity)
         {
             _repository.Remove(_mapper.Map<Person>(entity));
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void Remove(PersonDto entity)
         {
             _repository.Remove(_mapper.Map<Person>(entity));
@@ -143,6 +154,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(int id)
         {
             var person = _repository.GetById(id);
@@ -152,6 +164,7 @@ namespace Rise.PhoneDirectory.Service.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void Remove(int id)
         {
             var person = _repository.GetById(id);
@@ -162,12 +175,14 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveRageAsync(IEnumerable<PersonDto> entities)
         {
             _repository.RemoveRage(_mapper.Map<List<Person>>(entities));
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void RemoveRage(IEnumerable<PersonDto> entities)
         {
             _repository.RemoveRage(_mapper.Map<List<Person>>(entities));
@@ -175,12 +190,14 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheAspect]
         public async Task<PersonWithContactInfoDto> GetPersonByIdWithContactInformationAsync(int personId)
         {
             var person = await _repository.GetPersonByIdWithContactInformationAsync(personId);
             return _mapper.Map<PersonWithContactInfoDto>(person);
         }
 
+        [CacheAspect]
         public PersonWithContactInfoDto GetPersonByIdWithContactInformation(int personId)
         {
             var person = _repository.GetPersonByIdWithContactInformation(personId);

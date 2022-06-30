@@ -35,12 +35,14 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheAspect]
         public async Task<ReportDto> GetByIdAsync(int id)
         {
             var report = await _repository.GetByIdAsync(id);
             return _mapper.Map<ReportDto>(report);
         }
 
+        [CacheAspect]
         public ReportDto GetById(int id)
         {
             var report = _repository.GetById(id);
@@ -48,6 +50,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheAspect]
         public IEnumerable<ReportDto> Where(Expression<Func<Report, bool>> expression = null)
         {
             var reports = _repository.Where(expression).ToList();
@@ -67,6 +70,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public async Task<ReportDto> AddAsync(ReportDto entity)
         {
             var report = _mapper.Map<Report>(entity);
@@ -76,6 +80,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public ReportDto Add(ReportDto entity)
         {
             var report = _mapper.Map<Report>(entity);
@@ -86,6 +91,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public async Task<IEnumerable<ReportDto>> AddRangeAsync(IEnumerable<ReportDto> entities)
         {
             var reports = _mapper.Map<List<Report>>(entities);
@@ -95,6 +101,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public IEnumerable<ReportDto> AddRange(IEnumerable<ReportDto> entities)
         {
             var reports = _mapper.Map<List<Report>>(entities);
@@ -105,6 +112,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public async Task UpdateAsync(ReportDto entity)
         {
             _repository.Update(_mapper.Map<Report>(entity));
@@ -112,6 +120,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
         [ValidationAspect(typeof(ReportDtoValidator))]
+        [CacheRemoveAspect]
         public void Update(ReportDto entity)
         {
             _repository.Update(_mapper.Map<Report>(entity));
@@ -119,12 +128,14 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(ReportDto entity)
         {
             _repository.Remove(_mapper.Map<Report>(entity));
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void Remove(ReportDto entity)
         {
             _repository.Remove(_mapper.Map<Report>(entity));
@@ -132,6 +143,7 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveAsync(int id)
         {
             var report = _repository.GetById(id);
@@ -141,6 +153,7 @@ namespace Rise.PhoneDirectory.Service.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void Remove(int id)
         {
             var report = _repository.GetById(id);
@@ -151,12 +164,14 @@ namespace Rise.PhoneDirectory.Service.Services
         }
 
 
+        [CacheRemoveAspect]
         public async Task RemoveRageAsync(IEnumerable<ReportDto> entities)
         {
             _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
             await _unitOfWork.SaveChangesAsync();
         }
 
+        [CacheRemoveAspect]
         public void RemoveRage(IEnumerable<ReportDto> entities)
         {
             _repository.RemoveRage(_mapper.Map<List<Report>>(entities));
@@ -165,7 +180,7 @@ namespace Rise.PhoneDirectory.Service.Services
 
 
 
-
+        [CacheAspect]
         public List<ReportDataDto> GetReportData()
         {
             var reportData = new List<ReportDataDto>();
