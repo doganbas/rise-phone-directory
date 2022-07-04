@@ -1,3 +1,4 @@
+
 # Rise Phone Directory
 
 Telefon rehberi uygulamasý için geliþtirilmiþ **Backend** projesi. Projede **CRUD** iþlemlere ek olarak bir adet **Worker Servis** üzerine yerleþtirilmiþ raporlama aracý bulunmaktadýr.
@@ -8,7 +9,7 @@ Repo'yu yerel bilgisayarýnýza indirerek Visual Studio ile çalýþtýrabilirsiniz.
 
 ### Önkoþullar
 
-Bilgisayarýnýz **PostgreSql** sunucusu kurlu olmalýdýr. Eðer kurulu deðilse aþaðýda bulunan adresten iþletim sisteminize uygun olan seçeneði seçerek kurulum iþlemini tamamlayýn. Ayrýca uzak baðlantýda gerçekleþtirebilirsiniz. Uzak baðlantý gerçekleþtireceðiniz durumlarda bu adamý ***atlayýn***.
+Bilgisayarýnýzda **PostgreSql** sunucusu kurulu olmalýdýr. Eðer kurulu deðilse aþaðýda bulunan adresten iþletim sisteminize uygun olan seçeneði seçerek kurulum iþlemini tamamlayýn. Ayrýca uzak baðlantýda gerçekleþtirebilirsiniz. Uzak baðlantý gerçekleþtireceðiniz durumlarda bu adamý ***atlayýn***.
 
 ```
 https://www.postgresql.org/download/
